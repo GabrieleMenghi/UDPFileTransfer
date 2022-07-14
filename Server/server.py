@@ -36,11 +36,17 @@ while True:
 """
 while True:
     data, address = socket.recvfrom(size)
-    #socket.sendto(welcome_message.encode(), address)
-    if data.decode().split()[0] == 'list':
+    if data.decode() == 'Sending address':
+        socket.sendto(welcome_message.encode(), address)
+    elif data.decode().split()[0] == 'list':
         socket.sendto('Listing'.encode(), address)
+        socket.sendto(welcome_message.encode(), address)
+        print(data.decode())
     elif data.decode().split()[0] == 'get':
         socket.sendto('Getting'.encode(), address)
+        socket.sendto(welcome_message.encode(), address)
+        print(data.decode())
     elif data.decode().split()[0] == 'put':
         socket.sendto('Putting'.encode(), address)
-    print(data.decode())
+        socket.sendto(welcome_message.encode(), address)
+        print(data.decode())
