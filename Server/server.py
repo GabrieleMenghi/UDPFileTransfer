@@ -45,7 +45,15 @@ while True:
         socket.sendto(welcome_message.encode(), address)
         print(data.decode())
     elif data.decode().split()[0] == 'get':
-        socket.sendto('Getting'.encode(), address)
+        if os.path.exists(data.decode().split()[1]):
+            #socket.sendto('Exists'.encode(), address)
+            file = open(data.decode().split()[1], "rb")
+            send = file.read(size)
+            while send:
+                socket.sendto(send, address)
+                send = file.read(size)
+        else:
+            socket.sendto('The file does not exists'.encode(), address) 
         socket.sendto(welcome_message.encode(), address)
         print(data.decode())
     elif data.decode().split()[0] == 'put':
