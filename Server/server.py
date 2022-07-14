@@ -39,7 +39,9 @@ while True:
     if data.decode() == 'Sending address':
         socket.sendto(welcome_message.encode(), address)
     elif data.decode().split()[0] == 'list':
-        socket.sendto('Listing'.encode(), address)
+        for i in range(len(os.listdir(os.getcwd()))):
+            socket.sendto((os.listdir(os.getcwd()))[i].encode(), address)
+            
         socket.sendto(welcome_message.encode(), address)
         print(data.decode())
     elif data.decode().split()[0] == 'get':
