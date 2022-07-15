@@ -2,6 +2,7 @@ import socket as sk
 import os, threading
 
 size = 4096
+check = True
 
 #Socket creation
 socket = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
@@ -18,7 +19,6 @@ def listing():
         socket.sendto((os.listdir(os.getcwd()))[i].encode(), address)
         
     socket.sendto(welcome_message.encode(), address)
-    print(data.decode())
     
 def getting():
     if os.path.exists(data.decode().split()[1]):
@@ -30,27 +30,30 @@ def getting():
     else:
         socket.sendto('The file does not exists'.encode(), address) 
     socket.sendto(welcome_message.encode(), address)
-    print(data.decode())
-    
+
 def putting(filename):
+    socket.settimeout(3)
     data, address = socket.recvfrom(size)
-    file = open(filename, "wb")
+    try:
+        file = open(filename, "wb")
+    except Exception as e:
+        socket.sendto(e.encode(), address)
     check = True;
     while check:
-        if data.decode().split()[0] != 'UDP':
-            try:
+        try:
+            file.write(data)
+            data, server = socket.recvfrom(size)
+        except:
+            data = None
+            if data is not None:
                 file.write(data)
-                data, server = socket.recvfrom(size)
-            except:
-                data = None
-                if data is not None:
-                    file.write(data)
-                else:
-                    check = False
-        else:
-            print(data.decode())
-            check = False
+            else:
+                check = False
+
     file.close()
+    socket.settimeout(None)
+    socket.sendto('The file was uploaded succesfully'.encode(), address)
+
     
     
 while True:
@@ -67,8 +70,8 @@ while True:
         get_thread.start()
     #Put command
     elif data.decode().split()[0] == 'put':
-        path = data.decode().split()[1]
-        separate_path = path.split('/')
+        path, address = socket.recvfrom(size)
+        separate_path = path.decode().split('/')
         #The argument identifies the file name
         put_thread = threading.Thread(target=putting(separate_path[len(separate_path)-1]))
         put_thread.start()
