@@ -15,7 +15,7 @@ print(data.decode())
 
 socket.settimeout(3)
 
-def list():
+def listing():
     check = True;
     while check:
         try:
@@ -27,7 +27,7 @@ def list():
         else:
             check = False
 
-def get():
+def getting():
     data, server = socket.recvfrom(size)
     if data.decode() != 'The file does not exists':
         file = open(inp.split()[1], "wb")
@@ -75,11 +75,11 @@ while True:
             check = False;"""
     #List command
     if inp.split()[0] == 'list':
-        list_thread = threading.Thread(target=list)
+        list_thread = threading.Thread(target=listing)
         list_thread.start()
     #Get command
     elif inp.split()[0] == 'get':
-        get_thread = threading.Thread(target=get)
+        get_thread = threading.Thread(target=getting)
         get_thread.start()
 
 socket.close()

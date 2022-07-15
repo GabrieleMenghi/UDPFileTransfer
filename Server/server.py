@@ -11,16 +11,16 @@ server_address = ('localhost', 10000)
 print ('\n\rstarting on %s port %s' % server_address)
 socket.bind(server_address)
  
-welcome_message = '\r\nUDP file transfer\r\n\r\nOpzioni disponibili\r\n\r\n"list" restituisce la Lista dei file disponibili\r\n"get <filename>" consente di scaricare un file dal server\r\n"put <filepath> <filename>" consente di caricare un file sul server, specificandone il percorso\r\n'
+welcome_message = '\r\nUDP file transfer\r\n\r\nOpzioni disponibili\r\n\r\n"list" restituisce la Lista dei file disponibili\r\n"get <filename>" consente di scaricare un file dal server\r\n"put <absolutefilepath>" consente di caricare un file sul server, specificandone il percorso assoluto\r\n"exit" chiude il socket appartenente al client che ha lanciato il comando\r\n'
 
-def list():
+def listing():
     for i in range(len(os.listdir(os.getcwd()))):
         socket.sendto((os.listdir(os.getcwd()))[i].encode(), address)
         
     socket.sendto(welcome_message.encode(), address)
     print(data.decode())
     
-def get():
+def getting():
     if os.path.exists(data.decode().split()[1]):
         file = open(data.decode().split()[1], "rb")
         send = file.read(size)
@@ -32,20 +32,43 @@ def get():
     socket.sendto(welcome_message.encode(), address)
     print(data.decode())
     
+def putting(filename):
+    data, address = socket.recvfrom(size)
+    file = open(filename, "wb")
+    check = True;
+    while check:
+        if data.decode().split()[0] != 'UDP':
+            try:
+                file.write(data)
+                data, server = socket.recvfrom(size)
+            except:
+                data = None
+                if data is not None:
+                    file.write(data)
+                else:
+                    check = False
+        else:
+            print(data.decode())
+            check = False
+    file.close()
+    
+    
 while True:
     data, address = socket.recvfrom(size)
     if data.decode() == 'Sending address':
         socket.sendto(welcome_message.encode(), address)
     #List command
     elif data.decode().split()[0] == 'list':
-        list_thread = threading.Thread(target=list)
+        list_thread = threading.Thread(target=listing)
         list_thread.start()
     #Get command
     elif data.decode().split()[0] == 'get':
-        get_thread = threading.Thread(target=get)
+        get_thread = threading.Thread(target=getting)
         get_thread.start()
     #Put command
     elif data.decode().split()[0] == 'put':
-        socket.sendto('Putting'.encode(), address)
-        socket.sendto(welcome_message.encode(), address)
-        print(data.decode())
+        path = data.decode().split()[1]
+        separate_path = path.split('/')
+        #The argument identifies the file name
+        put_thread = threading.Thread(target=putting(separate_path[len(separate_path)-1]))
+        put_thread.start()
