@@ -11,8 +11,8 @@ socket = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
 server_address = ('localhost', 10000)
 
 socket.sendto('Sending address'.encode(), server_address)
-data, server = socket.recvfrom(size)
-print(data.decode())
+data0, server = socket.recvfrom(size)
+print(data0.decode())
 
 def listing():
     check = True;
@@ -28,54 +28,54 @@ def listing():
 
 def getting():
     socket.settimeout(3)
-    data, server = socket.recvfrom(size)
-    if data.decode() != 'The file does not exists':
+    data1, server = socket.recvfrom(size)
+    if data1.decode() != 'The file does not exists':
         file = open(inp.split()[1], "wb")
         check = True;
         while check:
-            if data.decode().split()[0] != 'UDP':
+            if data1.decode().split()[0] != 'UDP':
                 try:
-                    file.write(data)
-                    data, server = socket.recvfrom(size)
+                    file.write(data1)
+                    data1, server = socket.recvfrom(size)
                 except:
-                    data = None
-                    if data is not None:
-                        file.write(data)
+                    data1 = None
+                    if data1 is not None:
+                        file.write(data1)
                     else:
                         check = False
             else:
-                print(data.decode())
+                print(data1.decode())
                 check = False
         file.close()
     else:
-        print(data.decode())
+        print(data1.decode())
         check = True;
         while check:
             try:
-                data, server = socket.recvfrom(size)
+                data1, server = socket.recvfrom(size)
             except:
-                data = None
-            if data is not None:
-                print(data.decode())
+                data1 = None
+            if data1 is not None:
+                print(data1.decode())
             else:
                 check = False
     socket.settimeout(None)
                 
 def putting(filepath):
-    socket.settimeout(3)
+    #socket.settimeout(3)
     socket.sendto(filepath.encode(), server_address)
+    #TODO
     try:    
         file = open(filepath, "rb")
     except Exception as e:
         print(e)
     send = file.read(size)
     while send:
-        #print(send.decode("utf-8"))
         socket.sendto(send, server_address)
         send = file.read(size)
-    socket.settimeout(None)
-    data, server = socket.recvfrom(size)
-    print(data.decode())
+    #socket.settimeout(None)
+    data2, server = socket.recvfrom(size)
+    print(data2.decode())
 
 while True:
     inp = input()

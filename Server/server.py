@@ -53,8 +53,6 @@ def putting(filename):
     file.close()
     socket.settimeout(None)
     socket.sendto('The file was uploaded succesfully'.encode(), address)
-
-    
     
 while True:
     data, address = socket.recvfrom(size)
