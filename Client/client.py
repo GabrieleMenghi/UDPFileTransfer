@@ -1,6 +1,7 @@
 import socket as sk
 from tkinter import *
 from tkinter import filedialog
+import time
 
 size = 4096
 check = True
@@ -71,6 +72,7 @@ def putting(filepath):
         print(e)   
     send = file.read(size)
     while send:
+        time.sleep(0.00000000000000000000000001)
         socket.sendto(send, server_address)
         send = file.read(size)
     socket.settimeout(5)
