@@ -1,5 +1,6 @@
 import socket as sk
 import os, threading
+import time
 
 size = 4096
 check = True
@@ -25,9 +26,10 @@ def getting():
         file = open(data.decode().split()[1], "rb")
         send = file.read(size)
         while send:
+            time.sleep(0.00000000000000000000000001)
             socket.sendto(send, address)
             send = file.read(size)
-        file.close()
+        #socket.sendto('File succesfully downloaded', address)
     else:
         socket.sendto('The file does not exists'.encode(), address) 
     socket.sendto(welcome_message.encode(), address)
@@ -62,19 +64,13 @@ while True:
         socket.sendto(welcome_message.encode(), address)
     #List command
     elif data.decode().split()[0] == 'list':
-        """list_thread = threading.Thread(target=listing)
-        list_thread.start()"""
         listing()
     #Get command
     elif data.decode().split()[0] == 'get':
-        """get_thread = threading.Thread(target=getting)
-        get_thread.start()"""
         getting()
     #Put command
     elif data.decode().split()[0] == 'put':
         path, address = socket.recvfrom(size)
         separate_path = path.decode().split('/')
         #The argument identifies the file name
-        """put_thread = threading.Thread(target=putting(separate_path[len(separate_path)-1]))
-        put_thread.start()"""
         putting(separate_path[len(separate_path)-1])

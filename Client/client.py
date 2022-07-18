@@ -1,5 +1,6 @@
 import socket as sk
-import threading, tkinter
+import threading
+from tkinter import *
 from tkinter import filedialog
 
 size = 4096
@@ -29,25 +30,23 @@ def listing():
     socket.settimeout(None)
 
 def getting():
-    socket.settimeout(3)
+    #socket.settimeout(3)
     data1, server = socket.recvfrom(size)
     if data1 != 'The file does not exists'.encode():
         file = open(inp.split()[1], "wb")
         check = True;
-        if data1 != data0:
-            while check:
-                try:
-                    file.write(data1)
-                    data1, server = socket.recvfrom(size)
-                except:
-                    data1 = None
-                if data1 is not None:
-                    file.write(data1)
-                else:
-                    check = False
-            file.close()
-        else:
-            print(data1.decode())
+        #TODO
+        #To fix file writing when data is equals to welcome message
+        while check:
+            #try:
+            if data1 != data0:
+                #print(data1)
+                file.write(data1)
+                data1, server = socket.recvfrom(size)
+            else:
+                print(data1.decode())
+                check = False
+        file.close()
     else:
         print(data1.decode())
         check = True;
@@ -60,7 +59,7 @@ def getting():
                 print(data1.decode())
             else:
                 check = False
-    socket.settimeout(None)
+    #socket.settimeout(None)
                 
 def putting(filepath):
     socket.sendto(filepath.encode(), server_address)
@@ -72,7 +71,7 @@ def putting(filepath):
     while send:
         socket.sendto(send, server_address)
         send = file.read(size)
-    socket.settimeout(6)
+    socket.settimeout(5)
     check = True;
     while check:
         try:
@@ -84,29 +83,31 @@ def putting(filepath):
         else:
             check = False
     socket.settimeout(None)
+    
+def openFile():
+    global fname
+    fname = filedialog.askopenfilename(initialdir = "/",
+                                       title = "Select a File")
+    root.destroy()
 
 while True:
     inp = input()
     socket.sendto(inp.encode(), server)
     #List command
     if inp.split()[0] == 'list':
-        """list_thread = threading.Thread(target=listing)
-        list_thread.start()"""
         listing()
     #Get command
     elif inp.split()[0] == 'get':
-        """get_thread = threading.Thread(target=getting)
-        get_thread.start()"""
         getting()
     #Put command
     elif inp.split()[0] == 'put':
-        #Avoid the appearance of the tkinter window
-        tkinter.Tk().withdraw()
-        #Open file explorer
-        filename = filedialog.askopenfilename(initialdir = "/",
-                                              title = "Select a File")
-        """put_thread = threading.Thread(target=putting(filename))
-        put_thread.start()"""
-        putting(filename)
+        root = Tk()
+        Button(root, text='Open file explorer', command = openFile).pack(fill=X)
+        root.mainloop()
+
+        if fname:
+            putting(fname)
+        else:
+            print('No file was selected')
 
 socket.close()
