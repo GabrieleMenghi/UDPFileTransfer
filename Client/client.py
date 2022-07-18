@@ -1,5 +1,4 @@
 import socket as sk
-import threading
 from tkinter import *
 from tkinter import filedialog
 
@@ -30,7 +29,6 @@ def listing():
     socket.settimeout(None)
 
 def getting():
-    #socket.settimeout(3)
     data1, server = socket.recvfrom(size)
     if data1 != 'The file does not exists'.encode():
         file = open(inp.split()[1], "wb")
@@ -38,7 +36,8 @@ def getting():
         #TODO
         #To fix file writing when data is equals to welcome message
         while check:
-            #try:
+            if data1 == 'Downloading'.encode():
+                print(data1.decode())
             if data1 != data0:
                 #print(data1)
                 file.write(data1)
@@ -46,8 +45,11 @@ def getting():
             else:
                 print(data1.decode())
                 check = False
+            if data1 == 'File succesfully downloaded'.encode():
+                print(data1.decode())
         file.close()
     else:
+        socket.settimeout(3)
         print(data1.decode())
         check = True;
         while check:
@@ -59,14 +61,14 @@ def getting():
                 print(data1.decode())
             else:
                 check = False
-    #socket.settimeout(None)
+    socket.settimeout(None)
                 
 def putting(filepath):
     socket.sendto(filepath.encode(), server_address)
     try:    
         file = open(filepath, "rb")
     except Exception as e:
-        print(e)
+        print(e)   
     send = file.read(size)
     while send:
         socket.sendto(send, server_address)

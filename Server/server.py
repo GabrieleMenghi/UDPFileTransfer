@@ -1,6 +1,5 @@
 import socket as sk
-import os, threading
-import time
+import os, time
 
 size = 4096
 check = True
@@ -23,13 +22,14 @@ def listing():
     
 def getting():
     if os.path.exists(data.decode().split()[1]):
+        socket.sendto('Downloading'.encode(), address) 
         file = open(data.decode().split()[1], "rb")
         send = file.read(size)
         while send:
             time.sleep(0.00000000000000000000000001)
             socket.sendto(send, address)
             send = file.read(size)
-        #socket.sendto('File succesfully downloaded', address)
+        socket.sendto('File succesfully downloaded'.encode(), address)
     else:
         socket.sendto('The file does not exists'.encode(), address) 
     socket.sendto(welcome_message.encode(), address)
