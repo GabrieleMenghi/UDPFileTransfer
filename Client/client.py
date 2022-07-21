@@ -114,5 +114,7 @@ while True:
             putting(fname)
         else:
             print('No file was selected')
-
+    elif inp.split()[0] == 'exit':
+        break
+    
 socket.close()
