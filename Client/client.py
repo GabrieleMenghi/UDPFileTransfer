@@ -41,14 +41,15 @@ def getting():
                 print(data1.decode())
                 data1, server = socket.recvfrom(size)
             else:
-                if data1 != data0:
+                if data1 == 'File succesfully downloaded'.encode():
+                    print(data1.decode())
+                    check = False
+                else:
                     file.write(data1)
                     data1, server = socket.recvfrom(size)
-                else:
-                     print(data1.decode())
-                     check = False
-            if data1 == 'File succesfully downloaded'.encode():
-                print(data1.decode())
+        data1, server = socket.recvfrom(size)
+        if data1 == data0:
+            print(data1.decode())
         file.close()
     else:
         socket.settimeout(3)
