@@ -5,6 +5,8 @@ import time
 
 size = 4096
 check = True
+#Avoid packages loss
+time_sleep = 0.00000000000000000000000001
 
 #Socket creation
 socket = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
@@ -34,18 +36,17 @@ def getting():
     if data1 != 'The file does not exists'.encode():
         file = open(inp.split()[1], "wb")
         check = True;
-        #TODO
-        #To fix file writing when data is equals to welcome message
         while check:
             if data1 == 'Downloading'.encode():
                 print(data1.decode())
-            if data1 != data0:
-                #print(data1)
-                file.write(data1)
                 data1, server = socket.recvfrom(size)
             else:
-                print(data1.decode())
-                check = False
+                if data1 != data0:
+                    file.write(data1)
+                    data1, server = socket.recvfrom(size)
+                else:
+                     print(data1.decode())
+                     check = False
             if data1 == 'File succesfully downloaded'.encode():
                 print(data1.decode())
         file.close()
@@ -72,7 +73,7 @@ def putting(filepath):
         print(e)   
     send = file.read(size)
     while send:
-        time.sleep(0.00000000000000000000000001)
+        time.sleep(time_sleep)
         socket.sendto(send, server_address)
         send = file.read(size)
     socket.settimeout(5)

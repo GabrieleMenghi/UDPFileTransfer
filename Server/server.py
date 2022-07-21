@@ -3,6 +3,8 @@ import os, time
 
 size = 4096
 check = True
+#Avoid packages loss
+time_sleep = 0.00000000000000000000000001
 
 #Socket creation
 socket = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
@@ -16,6 +18,7 @@ welcome_message = '\r\nUDP file transfer\r\n\r\nOpzioni disponibili\r\n\r\n"list
 
 def listing():
     for i in range(len(os.listdir(os.getcwd()))):
+        time.sleep(time_sleep)
         socket.sendto((os.listdir(os.getcwd()))[i].encode(), address)
         
     socket.sendto(welcome_message.encode(), address)
@@ -26,7 +29,7 @@ def getting():
         file = open(data.decode().split()[1], "rb")
         send = file.read(size)
         while send:
-            time.sleep(0.00000000000000000000000001)
+            time.sleep(time_sleep)
             socket.sendto(send, address)
             send = file.read(size)
         socket.sendto('File succesfully downloaded'.encode(), address)
@@ -48,11 +51,10 @@ def putting(filename):
             data1, server = socket.recvfrom(size)
         except:
             data1 = None
-            if data1 is not None:
+            """if data1 is not None:
                 file.write(data1)
-            else:
-                check = False
-
+            else:"""
+            check = False
     file.close()
     socket.sendto('The file was uploaded succesfully'.encode(), address)
     socket.sendto(welcome_message.encode(), address)
