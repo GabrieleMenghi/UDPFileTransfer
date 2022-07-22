@@ -98,12 +98,13 @@ def openFile():
 
 while True:
     inp = input()
-    socket.sendto(inp.encode(), server)
     #List command
     if inp.split()[0] == 'list':
+        socket.sendto(inp.encode(), server)
         listing()
     #Get command
     elif inp.split()[0] == 'get':
+        socket.sendto(inp.encode(), server)
         getting()
     #Put command
     elif inp.split()[0] == 'put':
@@ -112,6 +113,7 @@ while True:
         root.mainloop()
 
         if fname:
+            socket.sendto(inp.encode(), server)
             putting(fname)
         else:
             print('No file was selected')

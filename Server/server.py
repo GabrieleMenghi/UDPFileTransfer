@@ -51,9 +51,6 @@ def putting(filename):
             data1, server = socket.recvfrom(size)
         except:
             data1 = None
-            """if data1 is not None:
-                file.write(data1)
-            else:"""
             check = False
     file.close()
     socket.sendto('The file was uploaded succesfully'.encode(), address)
