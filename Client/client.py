@@ -68,6 +68,8 @@ def getting():
                 
 def putting(filepath):
     socket.sendto(filepath.encode(), server_address)
+    data2, server = socket.recvfrom(size)
+    print(data2.decode())
     try:    
         file = open(filepath, "rb")
     except Exception as e:
@@ -108,6 +110,7 @@ while True:
         getting()
     #Put command
     elif inp.split()[0] == 'put':
+        fname = ''
         root = Tk()
         Button(root, text='Open file explorer', command = openFile).pack(fill=X)
         root.mainloop()

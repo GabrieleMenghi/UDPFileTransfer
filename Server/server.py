@@ -11,7 +11,7 @@ socket = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
 
 #Socket binding
 server_address = ('localhost', 10000)
-print ('\n\rstarting on %s port %s' % server_address)
+print ('\n\rstarting on %s, port %s' % server_address)
 socket.bind(server_address)
  
 welcome_message = '\r\nUDP file transfer\r\n\r\nOpzioni disponibili\r\n\r\n"list" restituisce la Lista dei file disponibili\r\n"get <filename>" consente di scaricare un file dal server\r\n"put" consente di caricare un file sul server, sciegliendolo dal file explorer, che si aprirà dopo aver digitato il comando\r\n"exit" chiude il socket appartenente al client che ha lanciato il comando\r\n'
@@ -37,13 +37,11 @@ def getting():
         socket.sendto('The file does not exists'.encode(), address) 
     socket.sendto(welcome_message.encode(), address)
 
-def putting(filename):
+def putting(filename, address):
     socket.settimeout(3)
+    socket.sendto('Uploading'.encode(), address)
     data1, address = socket.recvfrom(size)
-    try:
-        file = open(filename, "wb")
-    except Exception as e:
-        socket.sendto(e.encode(), address)
+    file = open(filename, "wb")
     check = True;
     while check:
         try:
@@ -71,5 +69,7 @@ while True:
     elif data.decode().split()[0] == 'put':
         path, address = socket.recvfrom(size)
         separate_path = path.decode().split('/')
-        #The argument identifies the file name
-        putting(separate_path[len(separate_path)-1])
+        filename = separate_path[len(separate_path)-1]
+        if len(filename) > 50:
+            filename = filename[len(filename)-50:]
+        putting(filename, address)
